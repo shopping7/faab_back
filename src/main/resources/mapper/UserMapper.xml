@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.faab.mapper.UserMapper">
+    <resultMap id="userMap" type="com.example.faab.domain.UserVO">
+        <id column="username" property="username"></id>
+        <result column="sex" property="sex"></result>
+        <result column="email" property="email"></result>
+        <result column="phone" property="phone"></result>
+        <collection property="attr" ofType="String">
+            <result column="attr" property="attr"></result>
+        </collection>
+    </resultMap>
+    <select id="getAllUsers" resultMap="userMap">
+        SELECT u.username,u.sex,u.email,u.phone,a.attr AS attr FROM
+        USER u,user_Attr ua,attr a WHERE u.username=ua.username AND ua.attr_id=a.id
+    </select>
+
+
+    <resultMap id="loginUserMap" type="com.example.faab.domain.UserVO">
+        <id column="username" property="username"></id>
+        <result column="sex" property="sex"></result>
+        <result column="email" property="email"></result>
+        <result column="phone" property="phone"></result>
+        <collection property="attr" ofType="String">
+            <result column="attr" property="attr"></result>
+        </collection>
+    </resultMap>
+    <select id="loginUser" resultMap="loginUserMap">
+        SELECT u.username,u.sex,u.email,u.phone,a.attr AS attr
+        FROM USER u,user_Attr ua,attr a WHERE u.username=ua.username AND ua.attr_id=a.id
+        AND u.username=#{username} AND u.password=#{password}
+    </select>
+
+    <resultMap id="OneUserMap" type="com.example.faab.domain.UserVO">
+        <id column="username" property="username"></id>
+        <result column="sex" property="sex"></result>
+        <result column="email" property="email"></result>
+        <result column="phone" property="phone"></result>
+        <collection property="attr" ofType="String">
+            <result column="attr" property="attr"></result>
+        </collection>
+    </resultMap>
+    <select id="getOneUser" resultMap="OneUserMap">
+        SELECT u.username,u.sex,u.email,u.phone,a.attr AS attr
+        FROM USER u,user_Attr ua,attr a WHERE u.username=ua.username AND ua.attr_id=a.id
+        AND u.username=#{username}
+    </select>
+</mapper>
