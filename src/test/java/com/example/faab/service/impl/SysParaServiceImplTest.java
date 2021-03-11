@@ -2,12 +2,9 @@ package com.example.faab.service.impl;
 
 import com.example.faab.config.DoublePairing;
 import com.example.faab.config.Serial;
-import com.example.faab.config.lsss.LSSSPolicyParameter;
 import com.example.faab.domain.UserVO;
 import com.example.faab.entity.*;
-import com.example.faab.service.SysParaService;
-import com.example.faab.service.UserKeyService;
-import com.example.faab.service.UserService;
+import com.example.faab.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +24,12 @@ class SysParaServiceImplTest {
 
     @Autowired
     UserKeyService userKeyService;
+
+    @Autowired
+    DecryptService decryptService;
+
+    @Autowired
+    UploadFileService uploadFileService;
 
     @Test
     public void setup(){
@@ -51,27 +54,22 @@ class SysParaServiceImplTest {
     public void test(){
         try{
             DoublePairing.getStart();
-//            User user = new User("001",new String[]{"RafflesHospital","Doctor","Patient"});
-            UserVO user = userService.getOneUser("001");
-            String username = user.getUsername();
-            List<String> userAttr = user.getAttr();
-            String[] attrs = userAttr.toArray(new String[userAttr.size()]);
-            SysPara sysPara = sysParaService.getSysPara();//1.系统初始化
+            String username = "001";
+            String[] attrs = {"Doctor","Patient","RafflesHospital"};
+            SysPara sysPara = sysParaService.Setup();//1.系统初始化
             Serial serial = new Serial();
             MSK msk = (MSK)serial.deserial(sysPara.getMsk());
             PP pp = (PP)serial.deserial(sysPara.getPp());
-//            sysParaService.SKGen(username, attrs);//2.密钥生成
-            UserKey userKey = userKeyService.getUserKey(username);
-
+            UserKey userKey = userKeyService.SKGen(pp, msk, username, attrs);//2.密钥生成
             SK sk = (SK)serial.deserial(userKey.getSk());
-            sysParaService.TKGen(sk, attrs);//3.用户转换密钥生成
+            decryptService.TKGen(sk, attrs);//3.用户转换密钥生成
             String ACCESSPOLICY = "((RafflesHospital OR CentralHospital) AND (SurgeryDepartment OR (Doctor AND Patient)))";
-            LSSSPolicyParameter lsssPolicyParameter = sysParaService.Encryption(pp,"fzu",ACCESSPOLICY,attrs);//4.多媒体加密，假设数据内容为fzu
-            sysParaService.Sign(pp, sk, lsssPolicyParameter);//5.多媒体密文签名
-            boolean resultofverify = sysParaService.Verify(pp);//6.签名校验
+            UploadFile uploadFile = uploadFileService.Encryption(pp, "fzu", ACCESSPOLICY, attrs);//4.多媒体加密，假设数据内容为fzu
+            Theta_CT theta_ct = uploadFileService.Sign(pp, sk);//5.多媒体密文签名
+            boolean resultofverify = uploadFileService.Verify(pp,theta_ct,uploadFile);//6.签名校验
             System.out.println(resultofverify);
-            sysParaService.Transform(resultofverify,lsssPolicyParameter, attrs);//7. 密文转换
-            sysParaService.Decrypt(sk, resultofverify);//8. 解密
+            Trans trans = decryptService.Transform(uploadFile, attrs);//7. 密文转换
+            decryptService.Decrypt(sk, trans);//8. 解密
 //            sysParaService.SecProvenance();//9.安全溯源
         }catch(Exception e){
             System.out.println("解密密文失败，有如下三种可能：");

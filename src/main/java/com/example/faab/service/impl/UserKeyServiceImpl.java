@@ -24,8 +24,6 @@ import java.io.File;
  *  服务实现类
  * </p>
  *
- * @author 公众号：java思维导图
- * @since 2021-03-09
  */
 @Service
 public class UserKeyServiceImpl extends ServiceImpl<UserKeyMapper, UserKey> implements UserKeyService {
@@ -37,7 +35,7 @@ public class UserKeyServiceImpl extends ServiceImpl<UserKeyMapper, UserKey> impl
 //    private Element d0, d1, d2[], d3, d4, d5, delta_id;
 //    private String theta_id;
 //    byte[] temp;
-    public void SKGen(PP pp, MSK msk, String username, String[] attributes){
+    public UserKey SKGen(PP pp, MSK msk, String username, String[] attributes){
         Field Zr = DoublePairing.Zr;
         Field G1 = DoublePairing.G1;
         Element g = G1.newElementFromBytes(pp.getG()).getImmutable();
@@ -79,7 +77,8 @@ public class UserKeyServiceImpl extends ServiceImpl<UserKeyMapper, UserKey> impl
         UserKey userKey = new UserKey();
         userKey.setUsername(username);
         userKey.setSk(serial.serial(sk));
-        mapper.insert(userKey);
+        return userKey;
+//        mapper.insert(userKey);
     }
 
     @Override

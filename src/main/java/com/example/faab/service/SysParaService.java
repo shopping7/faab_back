@@ -6,6 +6,7 @@ import com.example.faab.entity.PP;
 import com.example.faab.entity.SK;
 import com.example.faab.entity.SysPara;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.faab.entity.Trans;
 
 /**
  * <p>
@@ -17,21 +18,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SysParaService extends IService<SysPara> {
 
-    public void Setup();
+    public SysPara Setup();
 
     public SysPara getSysPara();
-
-    public void TKGen(SK sk,String[] attributes);
-
-    public LSSSPolicyParameter Encryption(PP pp, String M, String ACCESSPOLICY, String[] attributes);
-
-    public void Sign(PP pp, SK sk, LSSSPolicyParameter lsssPolicyParameter);
-
-    public boolean Verify(PP pp);
-
-    public void Transform(boolean result,LSSSPolicyParameter lsssPolicyParameter, String[] attributes);
-
-    public void Decrypt(SK sk, boolean result);
 
 //    public void SecProvenance();
 }
