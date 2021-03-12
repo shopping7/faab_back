@@ -9,5 +9,5 @@ public interface DecryptService {
 
     public Trans Transform(UploadFile uploadFile, String[] attributes);
 
-    public void Decrypt(SK sk, Trans trans);
+    public byte[] Decrypt(SK sk, Trans trans);
 }

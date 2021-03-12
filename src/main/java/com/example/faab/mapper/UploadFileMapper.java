@@ -2,6 +2,9 @@ package com.example.faab.mapper;
 
 import com.example.faab.entity.UploadFile;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface UploadFileMapper extends BaseMapper<UploadFile> {
 
+    @Select("SELECT file_name FROM upload_file")
+    public List<String> getAllFileName();
 }

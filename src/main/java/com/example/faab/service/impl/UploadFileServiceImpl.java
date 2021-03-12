@@ -1,9 +1,11 @@
 package com.example.faab.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.faab.config.AccessControlEngine;
 import com.example.faab.config.DoublePairing;
 import com.example.faab.config.Serial;
 import com.example.faab.config.cipher.Crytpto;
+import com.example.faab.config.cipher.CrytptpFile;
 import com.example.faab.config.cipher.Hash;
 import com.example.faab.config.lsss.LSSSPolicyParameter;
 import com.example.faab.config.lsss.lw10.LSSSLW10Engine;
@@ -20,6 +22,8 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +44,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     //4.多媒体加密阶段
     private byte[] CM;
     private Element VK, C0, C1, C2, C3[], C4[],rou[];
-    public UploadFile Encryption(PP pp, String M, String ACCESSPOLICY, String[] attributes){
+    public UploadFile Encryption(PP pp,String filename, File file, String ACCESSPOLICY, String[] attributes){
         Pairing pairing = DoublePairing.pairing;
         Field G1 = DoublePairing.G1;
         Field Zr = DoublePairing.Zr;
@@ -81,7 +85,11 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         Element Γ = GT.newRandomElement().getImmutable();
         String kf = Γ.toString();
         //System.out.println(Γ);
-        CM = Crytpto.SEnc(kf, M.getBytes());
+        try {
+            CM = CrytptpFile.encrypt(file,kf.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String hash = Hash.md5DigestAsHex(Γ.toString()+ Base64.encodeBase64String(CM));
         VK = G1.newElementFromHash(hash.getBytes(),0,hash.length()).getImmutable();
 
@@ -117,11 +125,12 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         Serial serial = new Serial();
         UploadFile uploadFile = new UploadFile();
         uploadFile.setCt(serial.serial(ct));
-        uploadFile.setFileName("test");
+        uploadFile.setFileName(filename);
         uploadFile.setLsssPolicy(serial.serial(lsssPolicyParameter));
         uploadFile.setVkm(VK.toBytes());
 
         return uploadFile;
+//        mapper.insert(uploadFile);
     }
 
     //5.多媒体密文签名
@@ -183,7 +192,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     }
 
 //6 签名校验
-    public boolean Verify(PP pp, Theta_CT theta_ct, UploadFile uploadFile){
+    public void Verify(PP pp, Theta_CT theta_ct, UploadFile uploadFile){
         Field Zr = DoublePairing.Zr;
         Field G1 = DoublePairing.G1;
         Pairing pairing = DoublePairing.pairing;
@@ -227,6 +236,30 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         String md5_1 = Hash.md5DigestAsHex(longstr);
         Element c_1 = Zr.newElementFromHash(md5_1.getBytes(),0,md5_1.length()).getImmutable();
 
-        return c_1.isEqual(c);
+        if(c_1.isEqual(c)){
+            uploadFile.setThetaCt(serial.serial(theta_ct));
+            mapper.insert(uploadFile);
+        }else{
+            System.out.println("签名不合法");
+        }
+    }
+
+    public UploadFile getFile(String filename){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("file_name",filename);
+        UploadFile uploadFile = mapper.selectOne(queryWrapper);
+        return uploadFile;
+    }
+
+    @Override
+    public List<String> getAllFileName() {
+        return mapper.getAllFileName();
+    }
+
+    @Override
+    public void deleteFile(String fileName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("file_name",fileName);
+        mapper.delete(queryWrapper);
     }
 }

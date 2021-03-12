@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserKeyService extends IService<UserKey> {
 
-    public UserKey SKGen(PP pp, MSK msk, String username, String[] attributes);
+    public void SKGen(PP pp, MSK msk, String username, String[] attributes, boolean isNew);
 
     public UserKey getUserKey(String username);
 

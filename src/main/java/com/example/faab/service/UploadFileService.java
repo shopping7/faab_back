@@ -8,6 +8,9 @@ import com.example.faab.entity.SK;
 import com.example.faab.entity.Theta_CT;
 import com.example.faab.entity.UploadFile;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -18,9 +21,15 @@ import com.example.faab.entity.UploadFile;
  */
 public interface UploadFileService extends IService<UploadFile> {
 
-    public UploadFile Encryption(PP pp, String M, String ACCESSPOLICY, String[] attributes);
+    public UploadFile Encryption(PP pp, String filename, File file, String ACCESSPOLICY, String[] attributes);
 
     public Theta_CT Sign(PP pp, SK sk);
 
-    public boolean Verify(PP pp, Theta_CT theta_ct, UploadFile uploadFile);
+    public void Verify(PP pp, Theta_CT theta_ct, UploadFile uploadFile);
+
+    public UploadFile getFile(String filename);
+
+    public List<String> getAllFileName();
+
+    public void deleteFile(String fileName);
 }

@@ -119,7 +119,7 @@ public class DecryptServiceImpl implements DecryptService {
     }
 
     //8 解密
-    public void Decrypt(SK sk, Trans trans){
+    public byte[] Decrypt(SK sk, Trans trans){
         Field GT = DoublePairing.GT;
         Field G1 = DoublePairing.G1;
         Field Zr = DoublePairing.Zr;
@@ -138,9 +138,11 @@ public class DecryptServiceImpl implements DecryptService {
             String kf = Γ.toString();
             byte[] m = Crytpto.SDec(kf, CM);
             String M = new String(m);
-            System.out.println("明文M = " + M);
+            System.out.println(M);
+            return m;
         }else{
             System.out.println("解密失败");
+            return null;
         }
     }
 }

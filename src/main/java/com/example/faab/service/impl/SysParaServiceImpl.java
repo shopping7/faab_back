@@ -28,7 +28,7 @@ public class SysParaServiceImpl extends ServiceImpl<SysParaMapper, SysPara> impl
     SysParaMapper sysParaMapper;
 
     @Override
-    public SysPara Setup() {
+    public void Setup() {
         Pairing pairing = DoublePairing.pairing;
         Field G1 = DoublePairing.G1;
         Field Zr = DoublePairing.Zr;
@@ -64,8 +64,8 @@ public class SysParaServiceImpl extends ServiceImpl<SysParaMapper, SysPara> impl
         sysPara.setPp(pp_b);
         sysPara.setMsk(msk_b);
 
-        return sysPara;
-//        sysParaMapper.insert(sysPara);
+//        return sysPara;
+        sysParaMapper.insert(sysPara);
     }
 
 
@@ -74,4 +74,7 @@ public class SysParaServiceImpl extends ServiceImpl<SysParaMapper, SysPara> impl
         SysPara sysPara = sysParaMapper.selectOne(null);
         return sysPara;
     }
+
+
+
 }

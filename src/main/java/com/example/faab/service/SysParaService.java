@@ -1,12 +1,9 @@
 package com.example.faab.service;
 
-import com.example.faab.config.lsss.LSSSPolicyParameter;
-import com.example.faab.domain.UserVO;
-import com.example.faab.entity.PP;
-import com.example.faab.entity.SK;
+
 import com.example.faab.entity.SysPara;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.faab.entity.Trans;
+import com.example.faab.entity.UploadFile;
 
 /**
  * <p>
@@ -18,9 +15,7 @@ import com.example.faab.entity.Trans;
  */
 public interface SysParaService extends IService<SysPara> {
 
-    public SysPara Setup();
+    public void Setup();
 
     public SysPara getSysPara();
-
-//    public void SecProvenance();
 }

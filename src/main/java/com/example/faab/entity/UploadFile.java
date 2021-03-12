@@ -35,5 +35,7 @@ public class UploadFile implements Serializable {
     @TableField("VKM")
     private byte[] vkm;
 
+    private byte[] thetaCt;
+
 
 }

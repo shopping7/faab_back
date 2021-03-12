@@ -4,10 +4,8 @@ import com.example.faab.config.DoublePairing;
 import com.example.faab.config.Serial;
 import com.example.faab.config.cipher.Crytpto;
 import com.example.faab.config.cipher.Hash;
-import com.example.faab.entity.MSK;
-import com.example.faab.entity.PP;
-import com.example.faab.entity.SK;
-import com.example.faab.entity.UserKey;
+import com.example.faab.entity.*;
+import com.example.faab.mapper.ListTranceMapper;
 import com.example.faab.mapper.UserKeyMapper;
 import com.example.faab.service.UserKeyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -31,11 +29,14 @@ public class UserKeyServiceImpl extends ServiceImpl<UserKeyMapper, UserKey> impl
     @Autowired
     UserKeyMapper mapper;
 
+    @Autowired
+    ListTranceMapper listTranceMapper;
+
     //2.密钥（用户私钥）生成
 //    private Element d0, d1, d2[], d3, d4, d5, delta_id;
 //    private String theta_id;
 //    byte[] temp;
-    public UserKey SKGen(PP pp, MSK msk, String username, String[] attributes){
+    public void SKGen(PP pp, MSK msk, String username, String[] attributes, boolean isNew){
         Field Zr = DoublePairing.Zr;
         Field G1 = DoublePairing.G1;
         Element g = G1.newElementFromBytes(pp.getG()).getImmutable();
@@ -77,8 +78,16 @@ public class UserKeyServiceImpl extends ServiceImpl<UserKeyMapper, UserKey> impl
         UserKey userKey = new UserKey();
         userKey.setUsername(username);
         userKey.setSk(serial.serial(sk));
-        return userKey;
-//        mapper.insert(userKey);
+        if(isNew){
+            mapper.insert(userKey);
+            ListTrance listTrance = new ListTrance();
+            listTrance.setThetaId(temp);
+            listTranceMapper.insert(listTrance);
+        }else{
+            mapper.updateById(userKey);
+        }
+
+
     }
 
     @Override
